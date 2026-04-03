@@ -38,8 +38,7 @@ export default function() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center font-sans ">
       <main className="flex flex-1 w-full bg-black">
-        
-        <MenuBar/>
+
 
         <div style={{ width: '100vw', height: '100vh' }}>
           <ReactFlow

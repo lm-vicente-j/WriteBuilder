@@ -1,3 +1,4 @@
+"use client"
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { LucideIcon } from "lucide-react";
@@ -19,7 +20,7 @@ interface NavModule {
 const MODULES: NavModule[] = [
     {
         name: 'Dashboard',
-        href: '',
+        href: '/',
         icon: BookTypeIcon,
     },
     {
@@ -43,7 +44,7 @@ export default function () {
   const pathname = usePathname();
 
     return (
-        <div  className='z-100 absolute top-[20%] flex flex-col items-center w-min h-min bg-white rounded-full ml-5'>
+        <div  className='z-100 absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-min h-min bg-white rounded-full ml-5'>
             {MODULES.map((item, i) => {
                 const isActive = pathname === item.href;
 
