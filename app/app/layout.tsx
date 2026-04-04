@@ -34,12 +34,14 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
 
         <div className="w-full flex-none md:w-64">
-            <MenuBar />
-          </div>
-          <TopToolbar/>
-          <div className="grow md:overflow-y-auto flex flex-col">
-            {children}
-          </div>
+          <MenuBar />
+        </div>
+        
+        <TopToolbar />
+        
+        <div className="grow md:overflow-y-auto flex flex-col">
+          {children}
+        </div>
       </body>
     </html>
   );

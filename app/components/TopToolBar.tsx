@@ -18,7 +18,7 @@ export default function TopToolbar() {
 
   const toolsByPath: Record<string, JSX.Element[]> = {
     "/write": [
-      <button
+      <button key="toggle-button"
         onClick={() => setShowNumbering(!showNumbering)}
         title="Toggle line numbers"
         className={`
@@ -31,25 +31,25 @@ export default function TopToolbar() {
       >
         ¶
       </button>,
-            <button className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="tag-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
         Tagging
       </button>
     ],
     "/timeline": [
-      <button className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="event-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
         Add Event
       </button>,
-      <button className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="auto-layout-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
         Auto layout
       </button>,
-            <button className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="filter-buttons" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
         Show hide filters
       </button>,
-            <button className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="fit-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
         Fit to screen
       </button>
-      
-      
+
+
     ],
   };
 
