@@ -1,25 +1,61 @@
 "use client";
 import { useState, useCallback } from 'react';
+import { useUIStore } from '@/store/uiStore';
 import {
   ReactFlow,
   applyNodeChanges,
   applyEdgeChanges,
   addEdge,
   Background,
-  BackgroundVariant
+  BackgroundVariant,
+  Position
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import MenuBar from '@/components/MenuBar';
 
 const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+  {
+    id: 'n1',
+    position: { x: 0, y: 0 },
+    data: { label: 'Node 1' },
+    sourcePosition: Position.Right,  
+    targetPosition: Position.Left,   
+    style: 
+    { 
+      width: 100, 
+      height: 25,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  },
+  {
+    id: 'n2',
+    position: { x: 300, y: 0 },       
+    data: { label: 'Node 2' },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+    style: 
+    { 
+      width: 100, 
+      height: 25,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  },
 ];
 
 const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
 
 
 export default function() {
+
+
+  const {
+
+    snapToGrid,
+  } = useUIStore();
+
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
 
@@ -48,13 +84,15 @@ export default function() {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             fitView
+            snapGrid={[25,25]}
+            snapToGrid={snapToGrid}
             proOptions={{ hideAttribution: true }}
           >
             <Background 
               color="#707070" 
               variant={BackgroundVariant.Lines} 
               gap={25} 
-              size={2} 
+              size={1} 
               style={{
                 maskImage: 'radial-gradient(ellipse at center, #000 10%, transparent 100%)',
                 WebkitMaskImage: 'radial-gradient(ellipse at center, #000 10%, transparent 100%)',

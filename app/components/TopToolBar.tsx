@@ -13,7 +13,9 @@ export default function TopToolbar() {
 
   const {
     setShowNumbering,
-    showNumbering
+    showNumbering,
+    snapToGrid,
+    setSnapToGrid
   } = useUIStore();
 
   const toolsByPath: Record<string, JSX.Element[]> = {
@@ -45,10 +47,18 @@ export default function TopToolbar() {
       <button key="filter-buttons" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
         Show hide filters
       </button>,
-      <button key="fit-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="fit-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200 `}>
         Fit to screen
+      </button>,
+      <button key="snap-button" onClick={() => setSnapToGrid(!snapToGrid)} className={`
+              text-xs px-2.5 py-1 rounded border transition-all duration-150
+              ${snapToGrid
+            ? "bg-neutral-700 border-neutral-600 text-neutral-200"
+            : "bg-transparent border-neutral-700 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600"
+          }
+            `}>
+        Snap to grid
       </button>
-
 
     ],
   };
