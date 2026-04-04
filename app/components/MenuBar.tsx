@@ -1,7 +1,7 @@
 "use client"
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LucideIcon } from "lucide-react";
+import { BookIcon, LucideIcon } from "lucide-react";
 import { 
     BookTypeIcon,
     ClockFadingIcon,
@@ -21,7 +21,7 @@ const MODULES: NavModule[] = [
     {
         name: 'Dashboard',
         href: '/',
-        icon: BookTypeIcon,
+        icon: BookIcon,
     },
     {
         name: 'Write',
@@ -45,7 +45,7 @@ export default function MenuBar() {
   
 
     return (
-        <div  className='z-100 absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-min h-min bg-white rounded-full ml-5'>
+        <div  className='z-100 absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-min h-min  border-b border-neutral-800 bg-neutral-900 rounded-full ml-5'>
             {MODULES.map((item, i) => {
 
                 const isActive = pathname === item.href;
@@ -55,7 +55,7 @@ export default function MenuBar() {
                         <Link
                             href={item.href}
                             key={item.href}
-                            className={`flex flex-col m-5 items-center justify-center w-18 h-18 rounded-full cursor-pointer transition-all shadow-md ${isActive ? 'bg-orange-400' : 'bg-gray-200'
+                            className={`flex flex-col m-5 items-center justify-center w-18 h-18 rounded-full cursor-pointer transition-all border shadow-md ${isActive ? 'bg-neutral-700 border-neutral-600 text-neutral-200' : 'bg-transparent border-neutral-700 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
                                 }`}
                         >
                             <item.icon size={25} className='mb-1' />
