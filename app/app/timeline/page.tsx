@@ -1,6 +1,12 @@
 "use client";
 import { useState, useCallback } from 'react';
 import { useUIStore } from '@/store/uiStore';
+import EventNode from "@/components/EventNode";
+import { useMemo } from 'react';
+
+const nodeTypes = { custom: EventNode };
+
+
 import {
   ReactFlow,
   applyNodeChanges,
@@ -15,6 +21,7 @@ import '@xyflow/react/dist/style.css';
 const initialNodes = [
   {
     id: 'n1',
+    type: "custom",
     position: { x: 0, y: 0 },
     data: { label: 'Node 1' },
     sourcePosition: Position.Right,  
@@ -34,6 +41,8 @@ const initialNodes = [
     data: { label: 'Node 2' },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
+    type: "custom",
+
     style: 
     { 
       width: 100, 
@@ -84,7 +93,9 @@ export default function() {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             fitView
+            nodeTypes={nodeTypes} 
             snapGrid={[25,25]}
+            
             snapToGrid={snapToGrid}
             proOptions={{ hideAttribution: true }}
           >

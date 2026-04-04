@@ -21,6 +21,8 @@ export default function Editor() {
   const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
   const charCount = content.length;
 
+
+
   return (
     <div className="flex flex-col h-screen bg-neutral-950 font-mono text-sm text-neutral-100">
 
