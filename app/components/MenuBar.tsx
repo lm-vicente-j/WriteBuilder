@@ -25,29 +25,32 @@ const MODULES: NavModule[] = [
     },
     {
         name: 'Write',
-        href: 'write',
+        href: '/write',
         icon: BookTypeIcon,
     },
     {
         name: 'timeline',
-        href: 'timeline',
+        href: '/timeline',
         icon: ClockFadingIcon,
     },
     {
         name: 'Settings',
-        href: 'settings',
+        href: '/settings',
         icon: SettingsIcon,
     },
 ]
 
-export default function () {
+export default function MenuBar() {
   const pathname = usePathname();
+  
 
     return (
         <div  className='z-100 absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-min h-min bg-white rounded-full ml-5'>
             {MODULES.map((item, i) => {
+
                 const isActive = pathname === item.href;
 
+                
                 return (
                         <Link
                             href={item.href}
