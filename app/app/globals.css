@@ -18,6 +18,9 @@
     --foreground: #ededed;
   }
 }
+*{
+  overflow: hidden;
+}
 
 body {
   font-family: Arial, Helvetica, sans-serif;
