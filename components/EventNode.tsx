@@ -11,11 +11,10 @@ export default function EventNode({
   node: any;
   zoom: number;
   updateNodePosition: (id: string, x: number, y: number) => void;
-  gridSize: number,
-  nodeWidth: number,
-  nodeHeight: number
+  gridSize: number;
+  nodeWidth: number;
+  nodeHeight: number;
 }) {
-  const GRID_SIZE = 30;
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.stopPropagation(); // Prevent the canvas from panning
@@ -32,27 +31,14 @@ export default function EventNode({
       const deltaY = (moveEvent.clientY - startY) / zoom;
 
       // 2. Add delta to the original position
-      let rawX = initialNodeX + deltaX;
-      let rawY = initialNodeY + deltaY;
+      const rawX = initialNodeX + deltaX;
+      const rawY = initialNodeY + deltaY;
 
-      // 3. Snap to grid
-      const snappedX = Math.round(rawX / GRID_SIZE) * GRID_SIZE;
-      const snappedY = Math.round(rawY / GRID_SIZE) * GRID_SIZE;
+      // 3. Pixel-perfect snap: round to the nearest grid cell using the gridSize prop
+      const snappedX = Math.round(rawX / gridSize) * gridSize;
+      const snappedY = Math.round(rawY / gridSize) * gridSize;
 
       updateNodePosition(node.id, snappedX, snappedY);
-      const handlePointerMove = (moveEvent: PointerEvent) => {
-        const deltaX = (moveEvent.clientX - startX) / zoom;
-        const deltaY = (moveEvent.clientY - startY) / zoom;
-
-        let rawX = initialNodeX + deltaX;
-        let rawY = initialNodeY + deltaY;
-
-        // The snapping math automatically adapts to whatever gridSize is passed in
-        const snappedX = Math.round(rawX / gridSize) * gridSize;
-        const snappedY = Math.round(rawY / gridSize) * gridSize;
-
-        updateNodePosition(node.id, snappedX, snappedY);
-      };
     };
 
     const handlePointerUp = () => {

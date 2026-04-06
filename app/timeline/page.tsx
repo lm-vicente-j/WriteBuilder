@@ -8,12 +8,12 @@ export default function TimeLine() {
   const nodes = [
     {
       id: 'node-1',
-      position: { x: 100, y: 100 },
+      position: { x: 90, y: 90 },
       data: { text: 'Input Node' }
     },
     {
       id: 'node-2',
-      position: { x: 400, y: 100 },
+      position: { x: 390, y: 90 },
       data: { text: 'Output Node' }
     }
   ];
