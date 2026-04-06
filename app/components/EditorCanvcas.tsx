@@ -1,13 +1,16 @@
 'use client';
 
+import { useUIStore } from '@/store/uiStore';
 import { useState, useCallback } from 'react';
 
 export default function EditorCanvas() {
   const [transform, setTransform] = useState({ x: 0, y: 0, zoom: 1 });
   const [isDragging, setIsDragging] = useState(false);
 
+  const {gridColor, canvasColor} = useUIStore();
+
   // Configuration for the grid
-  const GRID_SIZE = 20;
+  const GRID_SIZE = 30;
 
   const handlePointerDown = useCallback((e:any) => {
     // Left click (0) or Middle click (1) to pan
@@ -61,10 +64,10 @@ export default function EditorCanvas() {
         // touchAction: 'none' is crucial to prevent trackpad gestures 
         // from navigating back/forward or zooming the whole browser tab.
         touchAction: 'none',
-        backgroundColor: '#f8fafc',
+        backgroundColor: canvasColor,
         // The CSS dot pattern
-        backgroundImage: `linear-gradient(to right, #cbd5e1 1px, transparent 1px),
-          linear-gradient(to bottom, #cbd5e1 1px, transparent 1px)`,
+        backgroundImage: `linear-gradient(to right, ` + gridColor + ` 1px, transparent 1px),
+          linear-gradient(to bottom,  ` + gridColor + ` 1px, transparent 1px)`,
         // Scale the grid pattern with the zoom state
         backgroundSize: `${scaledGridSize}px ${scaledGridSize}px`,
         // Move the grid pattern with the pan (x, y) state
