@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from "react";
 
 interface EventNodeProps {
   node: any;
@@ -11,7 +12,9 @@ interface EventNodeProps {
   snapToGrid: boolean;
 }
 
-export default function EventNode({node,zoom,updateNodePosition,gridSize,nodeWidth,nodeHeight,snapToGrid}: EventNodeProps) {
+export default function EventNode({ node, zoom, updateNodePosition, gridSize, nodeWidth, nodeHeight, snapToGrid }: EventNodeProps) {
+
+  const [showPorts, setShowPorts] = useState(false);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.stopPropagation(); // Prevent the canvas from panning    
@@ -38,8 +41,6 @@ export default function EventNode({node,zoom,updateNodePosition,gridSize,nodeWid
       updateNodePosition(node.id, snappedX, snappedY);
     };
 
-
-    ////
     const handlePointerUp = () => {
       document.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('pointerup', handlePointerUp);
@@ -49,25 +50,48 @@ export default function EventNode({node,zoom,updateNodePosition,gridSize,nodeWid
     document.addEventListener('pointerup', handlePointerUp);
   };
 
+  const handlePointerEnter = () => {
+    setShowPorts(true);
+  }
+
+  const handlePointerExit = () => {
+    setShowPorts(false);
+  }
+
   return (
     <div
       onPointerDown={handlePointerDown}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerExit}
       style={{
         position: 'absolute',
         transform: `translate(${node.position.x}px, ${node.position.y}px)`,
-        // Apply the dynamic dimensions here!
         width: `${nodeWidth}px`,
         height: `${nodeHeight}px`,
+        overflow: 'visible',
       }}
-      className="bg-white border-2 border-slate-300 rounded-lg shadow-md p-4 cursor-grab active:cursor-grabbing flex items-center justify-center select-none"
+      className="cursor-grab active:cursor-grabbing select-none"
     >
-      <span className="font-semibold text-slate-700">{node.data.text}</span>
 
-      {/* Visual Input Port (Left) */}
-      <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-slate-400 rounded-full border-2 border-white" />
+      <div className="w-full h-full bg-white border-2 border-slate-300 rounded-lg shadow-md p-4 flex items-center justify-center">
+        <span className="font-semibold text-slate-700">
+          {node.id}
+        </span>
+      </div>
 
-      {/* Visual Output Port (Right) */}
-      <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-blue-500 rounded-full border-2 border-white" />
+      <div
+        hidden={!showPorts}
+        className="z-10 flex justify-center items-center absolute -left-2.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-amber-50 rounded-full border border-slate-300 shadow-sm"
+      >
+        <span className="text-gray-950 leading-none mb-0.5">+</span>
+      </div>
+
+      <div
+        hidden={!showPorts}
+        className="z-10 flex justify-center items-center absolute -right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-amber-50 rounded-full border border-slate-300 shadow-sm"
+      >
+        <span className="text-gray-950 leading-none mb-0.5">+</span>
+      </div>
     </div>
   );
 }

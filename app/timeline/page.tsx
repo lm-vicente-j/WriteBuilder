@@ -11,12 +11,12 @@ export default function TimeLine() {
   const nodes = [
     {
       id: 'node-1',
-      position: { x: -50, y: 0 },
+      position: { x: -360, y: -90 },
       data: { text: 'Input Node' }
     },
     {
       id: 'node-2',
-      position: { x: 390, y: 90 },
+      position: { x: 150, y: -90 },
       data: { text: 'Output Node' }
     }
   ];

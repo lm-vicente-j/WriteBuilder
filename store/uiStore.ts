@@ -20,7 +20,7 @@ export const useUIStore = create<UIStore>((set) => ({
   canvasColor: "#050505",
   gridColor: "#262626",
   showNumbering: false,
-  snapToGrid: false,
+  snapToGrid: true,
   setCanvasColor: (val) => set({canvasColor: val}),
   setGridColor: (val) => set({gridColor: val}),
   setSnapToGrid: (val) => set({snapToGrid: val}),
