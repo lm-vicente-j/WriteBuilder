@@ -1,14 +1,7 @@
 'use client';
 
-export default function EventNode({
-  node,
-  zoom,
-  updateNodePosition,
-  gridSize,
-  nodeWidth,
-  nodeHeight,
-  snapToGrid
-}: {
+
+interface EventNodeProps {
   node: any;
   zoom: number;
   updateNodePosition: (id: string, x: number, y: number) => void;
@@ -16,7 +9,9 @@ export default function EventNode({
   nodeWidth: number;
   nodeHeight: number;
   snapToGrid: boolean;
-}) {
+}
+
+export default function EventNode({node,zoom,updateNodePosition,gridSize,nodeWidth,nodeHeight,snapToGrid}: EventNodeProps) {
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.stopPropagation(); // Prevent the canvas from panning    
