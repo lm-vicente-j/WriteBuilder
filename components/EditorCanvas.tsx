@@ -4,6 +4,8 @@ import { useUIStore } from '@/store/uiStore';
 import { useState, useCallback } from 'react';
 import Edge from './Edge';
 import EventNode from './EventNode';
+import { useEffect } from 'react';
+import { useRef } from 'react';
 
 interface EditorCanvasProps {
     initialNodes: any;
@@ -15,14 +17,23 @@ interface EditorCanvasProps {
 
 export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, gridColor, canvasColor }: EditorCanvasProps) {
 
-    const [transform, setTransform] = useState({ x:0, y: 0, zoom: 1 });
+    const [transform, setTransform] = useState({ x: 0, y: 0, zoom: 1 });
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (containerRef.current) {
+            const { width, height } = containerRef.current.getBoundingClientRect();
+            setTransform({ x: width / 2, y: height / 2, zoom: 1 });
+        }
+    }, []);
+
     const [isDragging, setIsDragging] = useState(false);
 
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
 
     const GRID_SIZE = 30;
-    const NODE_WIDTH  = GRID_SIZE * 6; // 180px
+    const NODE_WIDTH = GRID_SIZE * 6; // 180px
     const NODE_HEIGHT = GRID_SIZE * 3; // 90px
 
     const updateNodePosition = useCallback((id: string, x: number, y: number) => {
@@ -67,6 +78,7 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
 
     return (
         <div
+            ref={containerRef}
             className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             style={{
                 position: 'relative',
@@ -107,8 +119,8 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
 
                         const startX = sourceNode.position.x + NODE_WIDTH;
                         const startY = sourceNode.position.y + NODE_HEIGHT / 2;
-                        const endX   = targetNode.position.x;
-                        const endY   = targetNode.position.y + NODE_HEIGHT / 2;
+                        const endX = targetNode.position.x;
+                        const endY = targetNode.position.y + NODE_HEIGHT / 2;
 
                         return (
                             <Edge

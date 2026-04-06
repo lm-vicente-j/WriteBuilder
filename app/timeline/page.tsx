@@ -11,7 +11,7 @@ export default function TimeLine() {
   const nodes = [
     {
       id: 'node-1',
-      position: { x: 90, y: 90 },
+      position: { x: -50, y: 0 },
       data: { text: 'Input Node' }
     },
     {
