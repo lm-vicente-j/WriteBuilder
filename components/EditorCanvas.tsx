@@ -8,13 +8,15 @@ import EventNode from './EventNode';
 interface EditorCanvasProps {
     initialNodes: any;
     initialEdges: any;
+    snapToGrid: boolean;
+    gridColor: string;
+    canvasColor: string;
 }
 
-export default function EditorCanvas({ initialNodes, initialEdges }: EditorCanvasProps) {
+export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, gridColor, canvasColor }: EditorCanvasProps) {
 
-    const [transform, setTransform] = useState({ x: 0, y: 0, zoom: 1 });
+    const [transform, setTransform] = useState({ x:0, y: 0, zoom: 1 });
     const [isDragging, setIsDragging] = useState(false);
-    const { gridColor, canvasColor } = useUIStore();
 
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
@@ -145,6 +147,7 @@ export default function EditorCanvas({ initialNodes, initialEdges }: EditorCanva
                             gridSize={GRID_SIZE}
                             nodeHeight={NODE_HEIGHT}
                             nodeWidth={NODE_WIDTH}
+                            snapToGrid={snapToGrid}
                         />
                     ))}
                 </div>

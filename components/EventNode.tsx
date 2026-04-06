@@ -6,7 +6,8 @@ export default function EventNode({
   updateNodePosition,
   gridSize,
   nodeWidth,
-  nodeHeight
+  nodeHeight,
+  snapToGrid
 }: {
   node: any;
   zoom: number;
@@ -14,16 +15,17 @@ export default function EventNode({
   gridSize: number;
   nodeWidth: number;
   nodeHeight: number;
+  snapToGrid: boolean;
 }) {
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    e.stopPropagation(); // Prevent the canvas from panning
+    e.stopPropagation(); // Prevent the canvas from panning    
 
     // Capture initial positions to calculate exact deltas
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const initialNodeX = node.position.x;
-    const initialNodeY = node.position.y;
+    const startX = e.clientX; //screen
+    const startY = e.clientY; // screen
+    const initialNodeX = node.position.x; // canvas
+    const initialNodeY = node.position.y; // canvas
 
     const handlePointerMove = (moveEvent: PointerEvent) => {
       // 1. Calculate movement delta and divide by zoom to compensate for canvas scale
@@ -35,12 +37,14 @@ export default function EventNode({
       const rawY = initialNodeY + deltaY;
 
       // 3. Pixel-perfect snap: round to the nearest grid cell using the gridSize prop
-      const snappedX = Math.round(rawX / gridSize) * gridSize;
-      const snappedY = Math.round(rawY / gridSize) * gridSize;
+      const snappedX = snapToGrid ? Math.round(rawX / gridSize) * gridSize : rawX;
+      const snappedY = snapToGrid ? Math.round(rawY / gridSize) * gridSize : rawY;
 
       updateNodePosition(node.id, snappedX, snappedY);
     };
 
+
+    ////
     const handlePointerUp = () => {
       document.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('pointerup', handlePointerUp);

@@ -5,6 +5,9 @@ import EditorCanvas from '@/components/EditorCanvas';
 
 export default function TimeLine() {
 
+  const { gridColor, canvasColor, snapToGrid } = useUIStore();
+
+
   const nodes = [
     {
       id: 'node-1',
@@ -32,7 +35,7 @@ export default function TimeLine() {
 
 
         <div style={{ width: '100vw', height: '100vh' }}>
-          <EditorCanvas initialNodes={nodes} initialEdges={edges} />
+          <EditorCanvas initialNodes={nodes} initialEdges={edges} snapToGrid={snapToGrid} gridColor={gridColor} canvasColor={canvasColor} />
         </div>
       </main>
     </div>
