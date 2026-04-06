@@ -30,6 +30,8 @@ export default function EditorCanvas({ initialNodes, initialEdges }: EditorCanva
     const NODE_WIDTH = GRID_SIZE * 6;  // 25 * 6 = 150px
     const NODE_HEIGHT = GRID_SIZE * 3; // 25 * 3 = 75px
 
+    
+
     const updateNodePosition = useCallback((id: string, x: number, y: number) => {
         setNodes((prevNodes: any) =>
             prevNodes.map((node: any) =>
