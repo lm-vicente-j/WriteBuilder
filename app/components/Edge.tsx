@@ -1,31 +1,21 @@
-import EventNode from "./EventNode";
-
-interface EdgeProps {
-    sourceNode: any,
-    targetNode:any
-}
-
-// Conceptual Edge Component
-export default function Edge({ sourceNode, targetNode }:EdgeProps)  {
-  // Assuming ports are on the right/left center of the nodes
-  const startX = sourceNode.position.x + 150; // Node width
-  const startY = sourceNode.position.y + 25;  // Node half-height
-  
-  const endX = targetNode.position.x;
-  const endY = targetNode.position.y + 25;
-
-  // Control points pull the curve horizontally to create the "S" shape
+export default function Edge({ 
+  startX, startY, endX, endY 
+}: { 
+  startX: number; startY: number; endX: number; endY: number 
+}) {
+  // Control points pull the line horizontally to create an 'S' curve
   const controlPointX = (startX + endX) / 2;
 
-  // The SVG Path command
+  // The SVG path command (M = move to, C = cubic bezier to)
   const pathData = `M ${startX} ${startY} C ${controlPointX} ${startY}, ${controlPointX} ${endY}, ${endX} ${endY}`;
 
   return (
-    <path 
-      d={pathData} 
-      fill="none" 
-      stroke="#94a3b8" 
-      strokeWidth="2" 
+    <path
+      d={pathData}
+      fill="none"
+      stroke="#94a3b8"
+      strokeWidth="3"
+      className="transition-all duration-75"
     />
   );
-};
+}

@@ -13,7 +13,7 @@ export default function TimeLine() {
     },
     {
       id: 'node-2',
-      position: { x: 400, y: 150 },
+      position: { x: 400, y: 100 },
       data: { text: 'Output Node' }
     }
   ];
@@ -32,7 +32,7 @@ export default function TimeLine() {
 
 
         <div style={{ width: '100vw', height: '100vh' }}>
-          <EditorCanvas nodes={nodes} edges={edges} />
+          <EditorCanvas initialNodes={nodes} initialEdges={edges} />
         </div>
       </main>
     </div>
