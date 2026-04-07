@@ -38,19 +38,19 @@ export default function TopToolbar() {
       </button>
     ],
     "/timeline": [
-      <button key="event-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="event-button" className={`cursor-pointer text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 bg-transparent border-neutral-700 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600 `}>
         Add Event
       </button>,
-      <button key="auto-layout-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="auto-layout-button" className={`cursor-pointer text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 bg-transparent border-neutral-700 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600 `}>
         Auto layout
       </button>,
-      <button key="filter-buttons" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200`}>
+      <button key="filter-buttons" className={`cursor-pointer text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 bg-transparent border-neutral-700 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600 `}>
         Show hide filters
       </button>,
-      <button key="fit-button" className={`text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 border-neutral-600 text-neutral-200 `}>
+      <button key="fit-button" className={`cursor-pointer text-xs px-2.5 py-1 rounded border transition-all duration-150bg-neutral-700 bg-transparent border-neutral-700 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600 `}>
         Fit to screen
       </button>,
-      <button key="snap-button" onClick={() => setSnapToGrid(!snapToGrid)} className={`
+      <button key="snap-button" onClick={() => setSnapToGrid(!snapToGrid)} className={`cursor-pointer
               text-xs px-2.5 py-1 rounded border transition-all duration-150
               ${snapToGrid
             ? "bg-neutral-700 border-neutral-600 text-neutral-200"

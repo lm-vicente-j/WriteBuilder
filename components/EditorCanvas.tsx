@@ -1,11 +1,9 @@
 'use client';
 
 import { useUIStore } from '@/store/uiStore';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Edge from './Edge';
 import EventNode, { Node } from './EventNode';
-import { useEffect } from 'react';
-import { useRef } from 'react';
 
 interface EditorCanvasProps {
     initialNodes: any;
@@ -15,13 +13,26 @@ interface EditorCanvasProps {
     canvasColor: string;
 }
 
+interface PendingEdge {
+    sourceId: string;
+    sourcePort: 'left' | 'right';
+    currentX: number; 
+    currentY: number;
+    snapTargetId: string | null; 
+    snapTargetPort: 'left' | 'right' | null;
+}
+
 export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, gridColor, canvasColor }: EditorCanvasProps) {
 
     const [nodeCount, setNodeCount] = useState(initialNodes.length);
     const [edgeCount, setEdgeCount] = useState(initialEdges.length);
-
+    const edgeCountRef = useRef(edgeCount);
+    useEffect(() => { edgeCountRef.current = edgeCount; }, [edgeCount]);
 
     const [transform, setTransform] = useState({ x: 0, y: 0, zoom: 1 });
+    const transformRef = useRef(transform);
+    useEffect(() => { transformRef.current = transform; }, [transform]);
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -32,13 +43,32 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
     }, []);
 
     const [isDragging, setIsDragging] = useState(false);
-
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
+    const [pendingEdge, setPendingEdge] = useState<PendingEdge | null>(null);
+    const pendingEdgeRef = useRef(pendingEdge);
+    useEffect(() => { pendingEdgeRef.current = pendingEdge; }, [pendingEdge]);
 
     const GRID_SIZE = 30;
-    const NODE_WIDTH = GRID_SIZE * 6; // 180px
-    const NODE_HEIGHT = GRID_SIZE * 3; // 90px
+    const NODE_WIDTH = GRID_SIZE * 6;   // 180px
+    const NODE_HEIGHT = GRID_SIZE * 3;  // 90px
+
+    const screenToCanvas = useCallback((screenX: number, screenY: number) => {
+        const rect = containerRef.current!.getBoundingClientRect();
+        const t = transformRef.current;
+        return {
+            x: (screenX - rect.left - t.x) / t.zoom,
+            y: (screenY - rect.top - t.y) / t.zoom,
+        };
+    }, []);
+
+    const portUnderPoint = (clientX: number, clientY: number): HTMLElement | null => {
+        const el = document.elementFromPoint(clientX, clientY);
+        if (!el) return null;
+        // The port div itself or a child of it
+        const port = (el as HTMLElement).closest('[data-port]') as HTMLElement | null;
+        return port;
+    };
 
     const updateNodePosition = useCallback((id: string, x: number, y: number) => {
         setNodes((prev: any) =>
@@ -78,35 +108,119 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
         });
     }, []);
 
-    const scaledGridSize = GRID_SIZE * transform.zoom;
-
     const addNode = (xDirection: number, originNode: Node) => {
-
-        const distance = ((NODE_WIDTH) + 5 * GRID_SIZE) * xDirection;
+        const distance = (NODE_WIDTH + 5 * GRID_SIZE) * xDirection;
 
         const newNode = {
             id: 'node-' + (nodeCount + 1),
             position: { x: originNode.position.x + distance, y: originNode.position.y },
-            data: { text: 'New Node' }
-        }
+            data: { text: 'New Event' }
+        };
 
-        setNodes([...nodes, newNode]);
-        setNodeCount(nodeCount + 1);
+        setNodes((prev: any) => [...prev, newNode]);
+        setNodeCount((c: number) => c + 1);
 
-
-        // Add edges
         const newEdge = {
+            id: 'edge-' + (edgeCountRef.current + 1),
+            source: originNode.id,
+            target: newNode.id,
+        };
 
-            id: 'edge-' + (edgeCount + 1),
-            source: xDirection == 1 ? originNode.id : newNode.id, 
-            target: xDirection == 1 ? newNode.id : originNode.id,
+        setEdges((prev: any) => [...prev, newEdge]);
+        setEdgeCount((c: number) => c + 1);
+    };
 
+    const handlePortDragStart = useCallback((
+        nodeId: string,
+        port: 'left' | 'right',
+        clientX: number,
+        clientY: number
+    ) => {
+        const canvasPos = screenToCanvas(clientX, clientY);
+
+        setPendingEdge({
+            sourceId: nodeId,
+            sourcePort: port,
+            currentX: canvasPos.x,
+            currentY: canvasPos.y,
+            snapTargetId: null,
+            snapTargetPort: null,
+        });
+
+        const handleMove = (moveEvent: PointerEvent) => {
+            const c = screenToCanvas(moveEvent.clientX, moveEvent.clientY);
+            const portEl = portUnderPoint(moveEvent.clientX, moveEvent.clientY);
+            const hoveredNodeId = portEl?.getAttribute('data-node-id') ?? null;
+            const hoveredPort = (portEl?.getAttribute('data-port') ?? null) as 'left' | 'right' | null;
+
+            setPendingEdge(prev => prev ? {
+                ...prev,
+                currentX: c.x,
+                currentY: c.y,
+                snapTargetId: hoveredNodeId !== prev.sourceId ? hoveredNodeId : null,
+                snapTargetPort: hoveredNodeId !== prev.sourceId ? hoveredPort : null,
+            } : null);
+        };
+
+        const handleUp = (upEvent: PointerEvent) => {
+            document.removeEventListener('pointermove', handleMove);
+            document.removeEventListener('pointerup', handleUp);
+
+            const pe = pendingEdgeRef.current;
+            if (!pe) return;
+
+            const portEl = portUnderPoint(upEvent.clientX, upEvent.clientY);
+            const targetNodeId = portEl?.getAttribute('data-node-id') ?? null;
+
+            if (targetNodeId && targetNodeId !== pe.sourceId) {
+                // Determine edge direction: right-port is "out", left-port is "in"
+                // Always store as source→target (left-to-right = outgoing→incoming)
+                const sourceIsDragger = pe.sourcePort === 'right';
+                const newEdge = {
+                    id: 'edge-' + (edgeCountRef.current + 1),
+                    source: sourceIsDragger ? pe.sourceId : targetNodeId,
+                    target: sourceIsDragger ? targetNodeId : pe.sourceId,
+                };
+                setEdges((prev: any) => [...prev, newEdge]);
+                setEdgeCount((c: number) => c + 1);
+            }
+
+            setPendingEdge(null);
+        };
+
+        document.addEventListener('pointermove', handleMove);
+        document.addEventListener('pointerup', handleUp);
+    }, [screenToCanvas]);
+
+    const scaledGridSize = GRID_SIZE * transform.zoom;
+
+    const getPendingEdgeGeometry = () => {
+        if (!pendingEdge) return null;
+        const sourceNode = nodes.find((n: any) => n.id === pendingEdge.sourceId);
+        if (!sourceNode) return null;
+
+        const startX = pendingEdge.sourcePort === 'right'
+            ? sourceNode.position.x + NODE_WIDTH
+            : sourceNode.position.x;
+        const startY = sourceNode.position.y + NODE_HEIGHT / 2;
+
+        // Snap endpoint to target port if hovering over one
+        let endX = pendingEdge.currentX;
+        let endY = pendingEdge.currentY;
+        if (pendingEdge.snapTargetId && pendingEdge.snapTargetPort) {
+            const targetNode = nodes.find((n: any) => n.id === pendingEdge.snapTargetId);
+            if (targetNode) {
+                endX = pendingEdge.snapTargetPort === 'right'
+                    ? targetNode.position.x + NODE_WIDTH
+                    : targetNode.position.x;
+                endY = targetNode.position.y + NODE_HEIGHT / 2;
+            }
         }
 
-        setEdges([...edges, newEdge]);
-        setEdgeCount(edgeCount + 1);
+        return { startX, startY, endX, endY };
+    };
 
-    }
+    const pendingGeo = getPendingEdgeGeometry();
 
     return (
         <div
@@ -124,6 +238,8 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
                     `linear-gradient(to bottom, ${gridColor} 1px, transparent 1px)`,
                 backgroundSize: `${scaledGridSize}px ${scaledGridSize}px`,
                 backgroundPosition: `${transform.x}px ${transform.y}px`,
+                // Show crosshair while drawing an edge
+                cursor: pendingEdge ? 'crosshair' : undefined,
             }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -131,7 +247,6 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
             onPointerCancel={handlePointerUp}
             onWheel={handleWheel}
         >
-            {/* LAYER 1: Edges via full-viewport SVG with <g> transform */}
             <svg
                 style={{
                     position: 'absolute',
@@ -144,6 +259,7 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
                 }}
             >
                 <g transform={`translate(${transform.x}, ${transform.y}) scale(${transform.zoom})`}>
+                    {/* Committed edges */}
                     {edges.map((edge: any) => {
                         const sourceNode = nodes.find((n: any) => n.id === edge.source);
                         const targetNode = nodes.find((n: any) => n.id === edge.target);
@@ -164,10 +280,19 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
                             />
                         );
                     })}
+
+                    {pendingGeo && (
+                        <Edge
+                            startX={pendingGeo.startX}
+                            startY={pendingGeo.startY}
+                            endX={pendingGeo.endX}
+                            endY={pendingGeo.endY}
+                            preview
+                        />
+                    )}
                 </g>
             </svg>
 
-            {/* LAYER 2: Nodes via 0x0 overflow:visible transform origin div */}
             <div
                 style={{
                     position: 'absolute',
@@ -193,6 +318,7 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
                             nodeWidth={NODE_WIDTH}
                             snapToGrid={snapToGrid}
                             addNodeHandler={addNode}
+                            onPortDragStart={handlePortDragStart}
                         />
                     ))}
                 </div>
