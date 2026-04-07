@@ -17,6 +17,9 @@ interface EditorCanvasProps {
 
 export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, gridColor, canvasColor }: EditorCanvasProps) {
 
+    const [nodeCount, setNodeCount] = useState(initialNodes.length);
+
+
     const [transform, setTransform] = useState({ x: 0, y: 0, zoom: 1 });
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -75,6 +78,22 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
     }, []);
 
     const scaledGridSize = GRID_SIZE * transform.zoom;
+
+    const addNode = (xDirection: number, xNodeOrgin: number, yNodeOrigin: number) => {
+
+        const distance = ((NODE_WIDTH) + 5 * GRID_SIZE) * xDirection;
+
+        const newNode = {
+            id: 'node-' + (nodeCount+1),
+            position: { x: xNodeOrgin + distance, y: yNodeOrigin },
+            data: { text: 'New Node' }
+        }
+
+        setNodes([...nodes, newNode]);
+        setNodeCount(nodeCount+1);
+
+
+    }
 
     return (
         <div
@@ -160,6 +179,7 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
                             nodeHeight={NODE_HEIGHT}
                             nodeWidth={NODE_WIDTH}
                             snapToGrid={snapToGrid}
+                            addNodeHandler={addNode}
                         />
                     ))}
                 </div>

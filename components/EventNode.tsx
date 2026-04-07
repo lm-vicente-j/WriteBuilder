@@ -10,9 +10,10 @@ interface EventNodeProps {
   nodeWidth: number;
   nodeHeight: number;
   snapToGrid: boolean;
+  addNodeHandler: (xDirection: number, xNodeOrgin: number, yNodeOrigin: number) => void; // -1 left; 1 right
 }
 
-export default function EventNode({ node, zoom, updateNodePosition, gridSize, nodeWidth, nodeHeight, snapToGrid }: EventNodeProps) {
+export default function EventNode({ node, zoom, updateNodePosition, gridSize, nodeWidth, nodeHeight, snapToGrid, addNodeHandler }: EventNodeProps) {
 
   const [showPorts, setShowPorts] = useState(false);
 
@@ -58,6 +59,15 @@ export default function EventNode({ node, zoom, updateNodePosition, gridSize, no
     setShowPorts(false);
   }
 
+  const handlePortRightUp =  () =>{
+    addNodeHandler(1, node.position.x, node.position.y);
+  }
+
+  const handlePortLeftUp =  () =>{
+    addNodeHandler(-1, node.position.x, node.position.y);
+  }
+  
+
   return (
     <div
       onPointerDown={handlePointerDown}
@@ -80,15 +90,18 @@ export default function EventNode({ node, zoom, updateNodePosition, gridSize, no
       </div>
 
       <div
+      onMouseUp={handlePortLeftUp}
+
         hidden={!showPorts}
-        className="z-10 flex justify-center items-center absolute -left-2.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-amber-50 rounded-full border border-slate-300 shadow-sm"
+        className="cursor-pointer z-10 flex justify-center items-center absolute -left-2.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-amber-50 rounded-full border border-slate-300 shadow-sm"
       >
         <span className="text-gray-950 leading-none mb-0.5">+</span>
       </div>
 
       <div
+      onMouseUp={handlePortRightUp}
         hidden={!showPorts}
-        className="z-10 flex justify-center items-center absolute -right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-amber-50 rounded-full border border-slate-300 shadow-sm"
+        className="cursor-pointer z-10 flex justify-center items-center absolute -right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-amber-50 rounded-full border border-slate-300 shadow-sm"
       >
         <span className="text-gray-950 leading-none mb-0.5">+</span>
       </div>
