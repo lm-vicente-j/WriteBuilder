@@ -45,7 +45,7 @@ export default function MenuBar() {
   
 
     return (
-        <div  className='z-100 absolute top-1/2 -translate-y-1/2 flex flex-col items-center w-min h-min  border-b border-neutral-800 bg-neutral-900 rounded-full ml-5'>
+        <div  className='z-100 fixed top-1/2 -translate-y-1/2 flex flex-col items-center w-min h-min  border-b border-neutral-800 bg-neutral-900 rounded-full ml-5'>
             {MODULES.map((item, i) => {
 
                 const isActive = pathname === item.href;

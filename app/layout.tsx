@@ -31,15 +31,13 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="h-full flex flex-col">
 
-        <div className="w-full flex-none md:w-64">
-          <MenuBar />
-        </div>
+        <MenuBar />
         
         <TopToolbar />
         
-        <div className="grow md:overflow-y-auto flex flex-col">
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
           {children}
         </div>
       </body>
