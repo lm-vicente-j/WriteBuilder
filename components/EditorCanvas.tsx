@@ -98,8 +98,8 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
         const newEdge = {
 
             id: 'edge-' + (edgeCount + 1),
-            source: originNode.id, 
-            target: newNode.id,
+            source: xDirection == 1 ? originNode.id : newNode.id, 
+            target: xDirection == 1 ? newNode.id : originNode.id,
 
         }
 
