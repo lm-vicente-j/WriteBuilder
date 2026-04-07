@@ -3,7 +3,7 @@
 import { useUIStore } from '@/store/uiStore';
 import { useState, useCallback } from 'react';
 import Edge from './Edge';
-import EventNode from './EventNode';
+import EventNode, { Node } from './EventNode';
 import { useEffect } from 'react';
 import { useRef } from 'react';
 
@@ -18,6 +18,7 @@ interface EditorCanvasProps {
 export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, gridColor, canvasColor }: EditorCanvasProps) {
 
     const [nodeCount, setNodeCount] = useState(initialNodes.length);
+    const [edgeCount, setEdgeCount] = useState(initialEdges.length);
 
 
     const [transform, setTransform] = useState({ x: 0, y: 0, zoom: 1 });
@@ -79,19 +80,31 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
 
     const scaledGridSize = GRID_SIZE * transform.zoom;
 
-    const addNode = (xDirection: number, xNodeOrgin: number, yNodeOrigin: number) => {
+    const addNode = (xDirection: number, originNode: Node) => {
 
         const distance = ((NODE_WIDTH) + 5 * GRID_SIZE) * xDirection;
 
         const newNode = {
-            id: 'node-' + (nodeCount+1),
-            position: { x: xNodeOrgin + distance, y: yNodeOrigin },
+            id: 'node-' + (nodeCount + 1),
+            position: { x: originNode.position.x + distance, y: originNode.position.y },
             data: { text: 'New Node' }
         }
 
         setNodes([...nodes, newNode]);
-        setNodeCount(nodeCount+1);
+        setNodeCount(nodeCount + 1);
 
+
+        // Add edges
+        const newEdge = {
+
+            id: 'edge-' + (edgeCount + 1),
+            source: originNode.id, 
+            target: newNode.id,
+
+        }
+
+        setEdges([...edges, newEdge]);
+        setEdgeCount(edgeCount + 1);
 
     }
 

@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 
+export type Node = {id: string, position: {x:number, y:number}, data:{text:string}};
+export type Edge = {id: string, source: string, target: string};
+
 interface EventNodeProps {
-  node: any;
+  node: Node;
   zoom: number;
   updateNodePosition: (id: string, x: number, y: number) => void;
   gridSize: number;
   nodeWidth: number;
   nodeHeight: number;
   snapToGrid: boolean;
-  addNodeHandler: (xDirection: number, xNodeOrgin: number, yNodeOrigin: number) => void; // -1 left; 1 right
+  addNodeHandler: (xDirection: number, originNode: any) => void; // -1 left; 1 right
 }
 
 export default function EventNode({ node, zoom, updateNodePosition, gridSize, nodeWidth, nodeHeight, snapToGrid, addNodeHandler }: EventNodeProps) {
@@ -60,11 +63,11 @@ export default function EventNode({ node, zoom, updateNodePosition, gridSize, no
   }
 
   const handlePortRightUp =  () =>{
-    addNodeHandler(1, node.position.x, node.position.y);
+    addNodeHandler(1, node);
   }
 
   const handlePortLeftUp =  () =>{
-    addNodeHandler(-1, node.position.x, node.position.y);
+    addNodeHandler(-1, node);
   }
   
 
