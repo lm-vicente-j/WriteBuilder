@@ -1,12 +1,9 @@
 "use client";
-import { useState, useCallback } from 'react';
 import { useUIStore } from '@/store/uiStore';
 import EditorCanvas from '@/components/EditorCanvas';
 
 export default function TimeLine() {
-
   const { gridColor, canvasColor, snapToGrid } = useUIStore();
-
 
   const nodes = [
     {
@@ -24,18 +21,22 @@ export default function TimeLine() {
   const edges = [
     {
       id: 'edge-1',
-      source: 'node-1', // ID of the starting node
-      target: 'node-2'  // ID of the ending node
+      source: 'node-1',
+      target: 'node-2'
     }
   ];
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center font-sans ">
-      <main className="flex flex-1 w-full bg-black">
-
-
-        <div style={{ width: '100vw', height: '100vh' }}>
-          <EditorCanvas initialNodes={nodes} initialEdges={edges} snapToGrid={snapToGrid} gridColor={gridColor} canvasColor={canvasColor} />
+    <div className="flex flex-col flex-1 h-full min-h-0">
+      <main className="flex-1 w-full min-h-0 relative">
+        <div className="absolute inset-0 overflow-hidden">
+          <EditorCanvas 
+            initialNodes={nodes} 
+            initialEdges={edges} 
+            snapToGrid={snapToGrid} 
+            gridColor={gridColor} 
+            canvasColor={canvasColor} 
+          />
         </div>
       </main>
     </div>

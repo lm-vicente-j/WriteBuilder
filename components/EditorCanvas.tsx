@@ -1,7 +1,6 @@
 'use client';
 
-import { useUIStore } from '@/store/uiStore';
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react';
 import Edge from './Edge';
 import EventNode, { Node } from './EventNode';
 
@@ -78,14 +77,15 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
         );
     }, []);
 
-    const handlePointerDown = useCallback((e: any) => {
-        if (e.button === 0 || e.button === 1) {
-            setIsDragging(true);
-            e.currentTarget.setPointerCapture(e.pointerId);
-        }
+    const handlePointerDown = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
+        if (e.button !== 0 && e.button !== 1) return;
+        // Only pan on the canvas background — never steal clicks from the toolbar or nodes.
+        if (e.target !== e.currentTarget) return;
+        setIsDragging(true);
+        e.currentTarget.setPointerCapture(e.pointerId);
     }, []);
 
-    const handlePointerMove = useCallback((e: any) => {
+    const handlePointerMove = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
         if (!isDragging) return;
         setTransform((prev) => ({
             ...prev,
@@ -94,18 +94,26 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
         }));
     }, [isDragging]);
 
-    const handlePointerUp = useCallback((e: any) => {
+    const handlePointerUp = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
         setIsDragging(false);
-        e.currentTarget.releasePointerCapture(e.pointerId);
+        if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+        }
     }, []);
 
-    const handleWheel = useCallback((e: any) => {
-        e.preventDefault();
-        setTransform((prev) => {
-            const delta = -e.deltaY * 0.001;
-            const newZoom = Math.min(Math.max(0.1, prev.zoom + delta), 3);
-            return { ...prev, zoom: newZoom };
-        });
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        const onWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            setTransform((prev) => {
+                const delta = -e.deltaY * 0.001;
+                const newZoom = Math.min(Math.max(0.1, prev.zoom + delta), 3);
+                return { ...prev, zoom: newZoom };
+            });
+        };
+        el.addEventListener("wheel", onWheel, { passive: false });
+        return () => el.removeEventListener("wheel", onWheel);
     }, []);
 
     const addNode = (xDirection: number, originNode: Node) => {
@@ -225,11 +233,8 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
     return (
         <div
             ref={containerRef}
-            className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+            className={`absolute inset-0 z-0 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             style={{
-                position: 'relative',
-                width: '100%',
-                height: '100vh',
                 overflow: 'hidden',
                 touchAction: 'none',
                 backgroundColor: canvasColor,
@@ -238,14 +243,13 @@ export default function EditorCanvas({ initialNodes, initialEdges, snapToGrid, g
                     `linear-gradient(to bottom, ${gridColor} 1px, transparent 1px)`,
                 backgroundSize: `${scaledGridSize}px ${scaledGridSize}px`,
                 backgroundPosition: `${transform.x}px ${transform.y}px`,
-                // Show crosshair while drawing an edge
                 cursor: pendingEdge ? 'crosshair' : undefined,
             }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            onWheel={handleWheel}
+            onLostPointerCapture={handlePointerUp}
         >
             <svg
                 style={{
