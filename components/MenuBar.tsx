@@ -20,27 +20,27 @@ interface NavModule {
 const MODULES: NavModule[] = [
   {
     name: "Dashboard",
-    href: "/",
+    href: "/app",
     icon: BookIcon,
   },
   {
     name: "Write",
-    href: "/write",
+    href: "/app/write",
     icon: BookTypeIcon,
   },
   {
     name: "Timeline",
-    href: "/timeline",
+    href: "/app/timeline",
     icon: ClockFadingIcon,
   },
   {
     name: "Characters",
-    href: "/characters",
+    href: "/app//characters",
     icon: UsersRoundIcon,
   },
   {
     name: "Settings",
-    href: "/settings",
+    href: "/app/settings",
     icon: SettingsIcon,
   },
 ]
